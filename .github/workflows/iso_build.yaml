@@ -1,8 +1,6 @@
 name: iso_build
 on:
   workflow_dispatch:
-  schedule:
-#    - cron:  '30 6 1 * *'
 
 jobs:
   prepare_release:

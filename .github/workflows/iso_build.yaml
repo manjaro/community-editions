@@ -3,55 +3,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  prepare_release:
-    runs-on: ubuntu-20.04
-    steps:
-      - 
-        uses: styfle/cancel-workflow-action@0.8.0
-        with:
-          access_token: ${{ github.token }}
-      - 
-        id: time
-        uses: nanzm/get-time-action@v1.1
-        with:
-          format: 'YYYYMMDDHHmm'
-      - 
-        id: release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.time.outputs.time }}
-          release_name: Release ${{ steps.time.outputs.time }}
-          draft: false
-          prerelease: false
-    outputs:
-      upload_url: ${{ steps.release.outputs.upload_url }}
-      release_id: ${{ steps.release.outputs.id }}
-
   release:
     runs-on: ubuntu-20.04
-    needs: prepare_release    
     strategy:
       matrix:
         ##### EDIT ME #####      
-        EDITION: [cinnamon]
-        BRANCH: [unstable]
-        SCOPE: [minimal]
+        EDITION: [cinnamon,i3]
+        BRANCH: [stable]
+        SCOPE: [minimal,full]
         ###################
     steps:
       - 
-        uses: styfle/cancel-workflow-action@0.8.0
-        with:
-          access_token: ${{ github.token }}
-      -
-        name: install-build-dependencies
+        name: Install-build-dependencies
         run: |
           sudo apt-get update
           sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x
 
       -
-        name: install-pacman
+        name: Install-pacman
         run: |          
           sudo git clone https://gitlab.manjaro.org/packages/core/pacman.git
           cd pacman
@@ -78,7 +47,7 @@ jobs:
           sudo touch /etc/pacman.d/mirrorlist
           cd ..
       -
-        name: install-keyrings
+        name: Install-keyrings
         run: |          
           sudo git clone https://gitlab.manjaro.org/packages/core/manjaro-keyring.git
           cd manjaro-keyring
@@ -98,7 +67,7 @@ jobs:
           sudo pacman-key --init
           sudo pacman-key --populate archlinux manjaro
       -
-        name: install-arch-install-scripts
+        name: Install-arch-install-scripts
         run: |          
           pkgver=23
           sudo wget https://git.archlinux.org/arch-install-scripts.git/snapshot/arch-install-scripts-$pkgver.tar.gz
@@ -109,7 +78,7 @@ jobs:
           
           sudo wget https://gitlab.manjaro.org/applications/pacman-mirrors/-/raw/v4.19x-stable/conf/pacman-mirrors.conf -O /etc/pacman-mirrors.conf
       -
-        name: install-calamares-tools
+        name: Install-calamares-tools
         run: |          
           sudo git clone https://gitlab.manjaro.org/applications/calamares-tools.git
           
@@ -122,14 +91,14 @@ jobs:
           
           install_cal_tools
       -
-        name: install-mkinitcpio
+        name: Install-mkinitcpio
         run: |          
           sudo wget https://git.archlinux.org/mkinitcpio.git/snapshot/mkinitcpio-29.tar.gz
           sudo tar -xf mkinitcpio-29.tar.gz
           sudo make -C mkinitcpio-29 install
           sudo sed -i -e 's|File|Path|' /usr/share/libalpm/hooks/*hook
       -
-        name: install-manjaro-tools
+        name: Install-manjaro-tools
         run: |
           sudo git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-tools.git
 
@@ -143,25 +112,22 @@ jobs:
           
           install_mjr_tools
       -
-        name: checkout-iso-profiles
+        name: Checkout-iso-profiles
         run: |          
           sudo git clone https://gitlab.manjaro.org/profiles-and-settings/iso-profiles.git
       -
-        name: build
+        name: Build ISO
         env:
           EDITION: ${{ matrix.EDITION }}
           BRANCH: ${{ matrix.BRANCH }}
           SCOPE: ${{ matrix.SCOPE }}
-        run: |                
-          [ "$SCOPE" == "minimal" ] && unset SCOPE
-
           ##### EDIT ME #####
-
           KERNEL=linux510
           CODE_NAME="Ornara"
           VERSION=21.0
-
           ###################
+        run: |                
+          [ "$SCOPE" == "minimal" ] && unset SCOPE
           
           sudo sed -i -e 's|dist_name=$(get_distname)|dist_name=Manjaro|g' /usr/lib/manjaro-tools/util.sh
           sudo sed -i -e 's|iso_name=$(get_osid)|iso_name=manjaro|g' /usr/lib/manjaro-tools/util.sh
@@ -172,69 +138,34 @@ jobs:
           sudo buildiso ${SCOPE:+-f} -p $EDITION -b $BRANCH -k $KERNEL
           
           FILE_PATH=$(find /var/cache/manjaro-tools/iso -type f -name "*.iso" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
-          zip -j -s 1950m $(basename $FILE_PATH).zip $FILE_PATH
-          ls -lasih .
-          sha256sum $(basename $FILE_PATH).z* > $(basename $FILE_PATH).sha256
+          mv -v $FILE_PATH $(basename $FILE_PATH)
+          sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
 
           echo "FILE_PATH=$(basename $FILE_PATH)" >> $GITHUB_ENV
           echo "FILE_SHA256=$(basename $FILE_PATH).sha256" >> $GITHUB_ENV
           
           FILE_PKG=$(find /var/cache/manjaro-tools/iso -type f -name "*-pkgs.txt" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
-          cp -v $FILE_PKG .
+          mv -v $FILE_PKG .
 
-          echo "FILE_PKG=$(basename $FILE_PKG)" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - 
-        id: upload_release_zip
-        uses: actions/upload-release-asset@v1
+        name: Add SSH key
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepare_release.outputs.upload_url }}
-          asset_path: ./${{ env.FILE_PATH }}.zip
-          asset_name: ${{ env.FILE_PATH }}.zip
-          asset_content_type: application/zip
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p /home/runner/.ssh
+          ssh-keyscan frs.sourceforge.net >> /home/runner/.ssh/known_hosts
+          echo "${{ secrets.SF_PRIV_SSHKEY }}" > /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add /home/runner/.ssh/github_actions
       - 
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: ${{ env.FILE_PATH }}.z01
-          allow_failure: false
-      - 
-        id: upload_release_z01
-        uses: actions/upload-release-asset@v1
-        if: steps.check_files.outputs.files_exists == 'true'
+        name: Upload to SF
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepare_release.outputs.upload_url }}
-          asset_path: ./${{ env.FILE_PATH }}.z01
-          asset_name: ${{ env.FILE_PATH }}.z01
-          asset_content_type: application/zip
-      - 
-        id: upload_sha256
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepare_release.outputs.upload_url }}
-          asset_path: ./${{ env.FILE_SHA256 }}
-          asset_name: ${{ env.FILE_SHA256 }}
-          asset_content_type: text/plain
-      - 
-        id: upload_pkg
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepare_release.outputs.upload_url }}
-          asset_path: ./${{ env.FILE_PKG }}
-          asset_name: ${{ env.FILE_PKG }}
-          asset_content_type: text/plain     
-      - 
-        name: rollback_release
-        if: failure()
-        uses: author/action-rollback@stable
-        with:
-          release_id: ${{ needs.prepare_release.outputs.release_id }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ##### EDIT ME #####
+          PROJECT: "manjarolinux-community"
+          ###################
+        run: |
+          DATE=$(date +%y%m%d)
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}-$DATE

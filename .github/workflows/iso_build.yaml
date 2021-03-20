@@ -168,4 +168,4 @@ jobs:
           ###################
         run: |
           DATE=$(date +%y%m%d)
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}-$DATE
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION

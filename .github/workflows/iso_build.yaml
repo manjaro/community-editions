@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####      
-        EDITION: [cinnamon,i3]
+        EDITION: [mate,budgie]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################

@@ -7,20 +7,20 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        ##### EDIT ME #####      
+        ##### EDIT ME #####
         EDITION: [i3,budgie,cinnamon,mate]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################
     steps:
-      - 
-        name: Install-build-dependencies
+      -
+        name: Install build-dependencies
         run: |
           sudo apt-get update
-          sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x
+          sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x mktorrent sshpass
 
       -
-        name: Install-pacman
+        name: Install pacman
         run: |          
           sudo git clone https://gitlab.manjaro.org/packages/core/pacman.git
           cd pacman
@@ -47,7 +47,7 @@ jobs:
           sudo touch /etc/pacman.d/mirrorlist
           cd ..
       -
-        name: Install-keyrings
+        name: Install keyrings
         run: |          
           sudo git clone https://gitlab.manjaro.org/packages/core/manjaro-keyring.git
           cd manjaro-keyring
@@ -56,18 +56,18 @@ jobs:
           sudo install -m0644 manjaro-trusted /usr/share/pacman/keyrings/
           sudo install -m0644 manjaro-trusted /usr/share/pacman/keyrings/
           cd ..
-          
+
           sudo git clone https://projects.archlinux.org/archlinux-keyring.git
           cd archlinux-keyring
           sudo install -m0644 archlinux.gpg /usr/share/pacman/keyrings/
           sudo install -m0644 archlinux-trusted /usr/share/pacman/keyrings/
           sudo install -m0644 archlinux-revoked /usr/share/pacman/keyrings/
           cd ..          
-                    
+
           sudo pacman-key --init
           sudo pacman-key --populate archlinux manjaro
       -
-        name: Install-arch-install-scripts
+        name: Install arch-install-scripts
         run: |          
           pkgver=23
           sudo wget https://git.archlinux.org/arch-install-scripts.git/snapshot/arch-install-scripts-$pkgver.tar.gz
@@ -75,30 +75,30 @@ jobs:
           sudo make -C arch-install-scripts-$pkgver
           sudo make -C arch-install-scripts-$pkgver check
           sudo make -C arch-install-scripts-$pkgver PREFIX=/usr install
-          
+
           sudo wget https://gitlab.manjaro.org/applications/pacman-mirrors/-/raw/v4.19x-stable/conf/pacman-mirrors.conf -O /etc/pacman-mirrors.conf
       -
-        name: Install-calamares-tools
+        name: Install calamares-tools
         run: |          
           sudo git clone https://gitlab.manjaro.org/applications/calamares-tools.git
-          
+
           install_cal_tools() {
               cd calamares-tools
               sudo install -d /usr/share/calamares/
               sudo cp -rv schemas/ /usr/share/calamares/
               cd ..
           }
-          
+
           install_cal_tools
       -
-        name: Install-mkinitcpio
+        name: Install mkinitcpio
         run: |          
           sudo wget https://git.archlinux.org/mkinitcpio.git/snapshot/mkinitcpio-29.tar.gz
           sudo tar -xf mkinitcpio-29.tar.gz
           sudo make -C mkinitcpio-29 install
           sudo sed -i -e 's|File|Path|' /usr/share/libalpm/hooks/*hook
       -
-        name: Install-manjaro-tools
+        name: Install manjaro-tools
         run: |
           sudo git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-tools.git
 
@@ -109,10 +109,10 @@ jobs:
               sudo make SYSCONFDIR=/etc PREFIX=/usr install_yaml
               sudo make SYSCONFDIR=/etc PREFIX=/usr install_iso
           }
-          
+
           install_mjr_tools
       -
-        name: Checkout-iso-profiles
+        name: Checkout iso-profiles
         run: |          
           sudo git clone https://gitlab.manjaro.org/profiles-and-settings/iso-profiles.git
       -
@@ -122,43 +122,77 @@ jobs:
           BRANCH: ${{ matrix.BRANCH }}
           SCOPE: ${{ matrix.SCOPE }}
           ##### EDIT ME #####
-          KERNEL: linux510
+          KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: 21.0.2
+          VERSION: "21.0.2"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
-          
+
           sudo sed -i -e 's|dist_name=$(get_distname)|dist_name=Manjaro|g' /usr/lib/manjaro-tools/util.sh
           sudo sed -i -e 's|iso_name=$(get_osid)|iso_name=manjaro|g' /usr/lib/manjaro-tools/util.sh
           sudo sed -i -e "s|build_mirror='https://manjaro.moson.eu'|build_mirror='https://mirror.easyname.at/manjaro'|g" /usr/lib/manjaro-tools/util.sh
           sudo sed -i -e "s|dist_release=\$(get_release)|dist_release=$VERSION|g" /usr/lib/manjaro-tools/util.sh
           sudo sed -i -e "s|dist_codename=\$(get_codename)|dist_codename=\"$CODE_NAME\"|g" /usr/lib/manjaro-tools/util.sh
-             
+
           sudo buildiso ${SCOPE:+-f} -p $EDITION -b $BRANCH -k $KERNEL
-          
+
           FILE_PATH=$(find /var/cache/manjaro-tools/iso -type f -name "*.iso" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
           mv -v $FILE_PATH $(basename $FILE_PATH)
-          sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
 
-          echo "FILE_PATH=$(basename $FILE_PATH)" >> $GITHUB_ENV
+          mktorrent -v -a udp://tracker.opentrackr.org:1337 -w https://download.manjaro.org/$EDITION/$VERSION/$(basename $FILE_PATH) -o $(basename $FILE_PATH).torrent $(basename $FILE_PATH)
+
+          sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
+          sha1sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha1
+
+          echo "FILE_ISO=$(basename $FILE_PATH)" >> $GITHUB_ENV
           echo "FILE_SHA256=$(basename $FILE_PATH).sha256" >> $GITHUB_ENV
-          
+          echo "FILE_SHA1=$(basename $FILE_PATH).sha1" >> $GITHUB_ENV
+          echo "FILE_TORRENT=$(basename $FILE_PATH).torrent" >> $GITHUB_ENV
+
           FILE_PKG=$(find /var/cache/manjaro-tools/iso -type f -name "*-pkgs.txt" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
           mv -v $FILE_PKG .
 
+          echo "FILE_PKG=$(basename $FILE_PKG)" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+          sudo apt-get install paperkey &>/dev/null
+
+          GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
+          SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
+          PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
+          PASSPHRASE_FILE="$GPG_HOMEDIR/passphrase.file"
+          GPG="gpg --homedir=$GPG_HOMEDIR --no-tty --batch --yes"
+
+          echo "${{ secrets.CI_PUB_KEY }}" | base64 --decode > "$PUBLIC_KEY_FILE"
+          echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
+          echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
+
+          paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
+          | $GPG --import &>/dev/null
+          $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" "$(basename $FILE_PATH)"
+
+          echo "FILE_SIG=$(basename $FILE_PATH).sig" >> $GITHUB_ENV
+
+          find "$GPG_HOMEDIR" -type f -exec shred {} \;
+          rm -rf "$GPG_HOMEDIR"      
       - 
         name: Add SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           mkdir -p /home/runner/.ssh
-          ssh-keyscan frs.sourceforge.net >> /home/runner/.ssh/known_hosts
+          ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
+          ssh-keyscan -t rsa storage.osdn.net >> /home/runner/.ssh/known_hosts
+          ssh-keyscan -t rsa ${{ secrets.CDN_HOST }} >> /home/runner/.ssh/known_hosts
           echo "${{ secrets.SF_PRIV_SSHKEY }}" > /home/runner/.ssh/github_actions
+          echo "${{ secrets.OSDN_PRIV_SSHKEY }}" >> /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
+      - 
+        name: Upload to CDN77
+        run: sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/${{ env.VERSION }}
       - 
         name: Upload to SF
         env:
@@ -166,6 +200,12 @@ jobs:
           ##### EDIT ME #####
           PROJECT: "manjarolinux-community"
           ###################
-        run: |
-          DATE=$(date +%y%m%d)
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION
+        run: rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}
+#      - 
+#        name: Upload to OSDN
+#        env:
+#          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#          ##### EDIT ME #####
+#          PROJECT: "manjaro"
+#          ###################
+#        run: rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}

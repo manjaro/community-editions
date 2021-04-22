@@ -12,7 +12,7 @@ jobs:
         EDITION: [deepin]
         BRANCH: [stable]
         #SCOPE: [minimal,full]
-        SCOPE: [minimal]
+        SCOPE: [full]
         ###################
     steps:
       -

@@ -9,10 +9,9 @@ jobs:
       matrix:
         ##### EDIT ME #####
         #EDITION: [i3,budgie,cinnamon,mate]
+        EDITION: [deepin]
         BRANCH: [stable]
-        #SCOPE: [minimal,full]
-        EDITION: [mate]
-        SCOPE: [full]
+        SCOPE: [minimal,full]
         ###################
     steps:
       -

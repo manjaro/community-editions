@@ -11,7 +11,8 @@ jobs:
         #EDITION: [i3,budgie,cinnamon,mate]
         EDITION: [deepin]
         BRANCH: [stable]
-        SCOPE: [minimal,full]
+        #SCOPE: [minimal,full]
+        SCOPE: [minimal]
         ###################
     steps:
       -

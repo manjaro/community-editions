@@ -8,12 +8,9 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [cinnamon]
-#        EDITION: [budgie,cinnamon,deepin,i3,mate]
-        BRANCH: [unstable]
-#        BRANCH: [stable]
-        SCOPE: [minimal]
-#        SCOPE: [minimal,full]
+        EDITION: [budgie,cinnamon,deepin,i3,mate]
+        BRANCH: [stable]
+        SCOPE: [minimal,full]
         ###################
     steps:
       -
@@ -121,7 +118,7 @@ jobs:
           ##### EDIT ME #####
           KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: "21.0.6-rev"
+          VERSION: "21.0.7"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE

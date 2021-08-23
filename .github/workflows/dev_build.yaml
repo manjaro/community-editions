@@ -22,11 +22,9 @@ jobs:
       matrix:
         ##### EDIT ME #####
 #        EDITION: [budgie,cinnamon,deepin,i3,mate]
-        EDITION: [cinnamon]
-#        BRANCH: [stable]
-        BRANCH: [unstable]
-#        SCOPE: [minimal,full]
-        SCOPE: [full]
+        EDITION: [budgie,deepin,i3,mate]
+        BRANCH: [stable]
+        SCOPE: [minimal,full]
         ###################
     steps:
       - uses: styfle/cancel-workflow-action@0.9.0
@@ -38,9 +36,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.0"
-          kernel: linux510
-          code-name: "Ornara"
+          version: "21.1.0"
+          kernel: linux513
+          code-name: "Pahvo"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
       - name: rollback
         if: ${{ failure() || cancelled() }}

@@ -22,7 +22,7 @@ jobs:
       matrix:
         ##### EDIT ME #####
 #        EDITION: [budgie,cinnamon,deepin,i3,mate]
-        EDITION: [budgie,deepin,i3,mate]
+        EDITION: [budgie, cinnamon]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################

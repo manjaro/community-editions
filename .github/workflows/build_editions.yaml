@@ -21,8 +21,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-#        EDITION: [budgie,cinnamon,deepin,i3,mate]
-        EDITION: [budgie, cinnamon]
+        EDITION: [budgie,cinnamon,deepin,i3,mate]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################
@@ -36,7 +35,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.1.0"
+          version: "21.1.2"
           kernel: linux513
           code-name: "Pahvo"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}

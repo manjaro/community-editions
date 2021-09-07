@@ -41,6 +41,8 @@ jobs:
           code-name: "Pahvo"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
           office-chooser: ${{ matrix.office }}
+          gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
+          gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
           cdn77-host: ${{ secrets.CDN_HOST }}
           cdn77-user: ${{ secrets.CDN_USER }}
           cdn77-pwd: ${{ secrets.CDN_PWD }}

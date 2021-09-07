@@ -22,16 +22,17 @@ jobs:
       matrix:
         ##### EDIT ME #####
 #        EDITION: [budgie,cinnamon,deepin,i3,mate]
-        EDITION: [cinnamon]
+        EDITION: [i3]
         BRANCH: [stable]
         SCOPE: [minimal,full]
+        OFFICE: [true]
         ###################
     steps:
       - uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ github.token }}
       - id: image-build
-        uses: manjaro/manjaro-iso-action@2.5
+        uses: manjaro/manjaro-iso-action@feat/office-chooser
         with:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
@@ -40,6 +41,7 @@ jobs:
           kernel: linux513
           code-name: "Pahvo"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
+          office-chooser: ${{ matrix.office }}
           cdn77-host: ${{ secrets.CDN_HOST }}
           cdn77-user: ${{ secrets.CDN_USER }}
           cdn77-pwd: ${{ secrets.CDN_PWD }}

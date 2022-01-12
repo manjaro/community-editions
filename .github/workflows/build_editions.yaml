@@ -36,9 +36,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.1.2"
-          kernel: linux513
-          code-name: "Pahvo"
+          version: "21.2.1"
+          kernel: linux515
+          code-name: "Qonos"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
           office-chooser: ${{ matrix.office }}
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}

@@ -39,6 +39,7 @@ jobs:
           version: "21.2.2"
           kernel: linux515
           code-name: "Qonos"
+          build-mirror: ${{ secrets.BUILD_MIRROR }}
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
           office-chooser: ${{ matrix.office }}
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}

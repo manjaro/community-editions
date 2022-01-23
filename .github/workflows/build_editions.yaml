@@ -36,7 +36,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.2.1"
+          version: "21.2.2"
           kernel: linux515
           code-name: "Qonos"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}

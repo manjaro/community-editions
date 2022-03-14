@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [budgie,cinnamon,deepin,i3,mate]
+        EDITION: [budgie,cinnamon,i3,lxde,lxqt,lxqt-kwin,mate,openbox]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         OFFICE: [true]
@@ -36,7 +36,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.2.3"
+          version: "21.2.5"
           kernel: linux515
           code-name: "Qonos"
           build-mirror: ${{ secrets.BUILD_MIRROR }}

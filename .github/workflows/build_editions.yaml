@@ -22,7 +22,7 @@ jobs:
       matrix:
         ##### EDIT ME #####
 #        EDITION: [budgie,cinnamon,i3,lxde,lxqt,lxqt-kwin,mate,openbox]
-        EDITION: [budgie,cinnamon,i3,mate]
+        EDITION: [lxde,lxqt,lxqt-kwin,openbox]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         OFFICE: [true]

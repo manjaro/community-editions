@@ -36,7 +36,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.3.6"
+          version: "21.3.7"
           kernel: linux515
           code-name: "Ruah"
           build-mirror: ${{ secrets.BUILD_MIRROR }}

@@ -21,7 +21,8 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [budgie,cinnamon,i3,mate]
+        EDITION: [cinnamon]
+#        EDITION: [budgie,cinnamon,i3,mate]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         OFFICE: [true]

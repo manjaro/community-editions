@@ -21,8 +21,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [cinnamon]
-#        EDITION: [budgie,cinnamon,i3,mate]
+        EDITION: [budgie,cinnamon,i3,mate]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         OFFICE: [true]
@@ -37,9 +36,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.3.7"
-          kernel: linux515
-          code-name: "Ruah"
+          version: "22.0"
+          kernel: linux61
+          code-name: "Sikaris"
           build-mirror: ${{ secrets.BUILD_MIRROR }}
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
           office-chooser: ${{ matrix.office }}

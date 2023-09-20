@@ -36,7 +36,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "22.1.3"
+          version: "23.0.2"
           kernel: linux65
           code-name: "Uranos"
           build-mirror: ${{ secrets.BUILD_MIRROR }}

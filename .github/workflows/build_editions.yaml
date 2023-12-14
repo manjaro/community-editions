@@ -36,7 +36,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "23.0.1"
+          version: "23.0.4"
           kernel: linux65
           code-name: "Uranos"
           build-mirror: ${{ secrets.BUILD_MIRROR }}
@@ -44,9 +44,7 @@ jobs:
           office-chooser: ${{ matrix.office }}
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
-          cdn77-host: ${{ secrets.CDN_HOST }}
-          cdn77-user: ${{ secrets.CDN_USER }}
-          cdn77-pwd: ${{ secrets.CDN_PWD }}
+          s3-cfg: ${{ secrets.S3_CFG }}
       - name: rollback
         if: ${{ failure() || cancelled() }}
         run: |

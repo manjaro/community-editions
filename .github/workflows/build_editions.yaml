@@ -37,9 +37,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "23.0.4"
+          version: "23.1.0"
           kernel: linux65
-          code-name: "Uranos"
+          code-name: "Vulcan"
           build-mirror: ${{ secrets.BUILD_MIRROR }}
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
           office-chooser: ${{ matrix.office }}
@@ -57,3 +57,7 @@ jobs:
         run: |
           sshpass -p "${{ secrets.CDN_PWD }}" rsync --delete -vaP --stats \
             -e ssh $(mktemp) ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ env.edition }}/${{ env.version }}
+      - name: rollback cdn77 upload
+        if: ${{ failure() || cancelled() }}
+        run: |
+          s3cmd rm -r -f s3://s3downloadseu/${{ env.edition }}/${{ env.version }}

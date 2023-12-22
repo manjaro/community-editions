@@ -45,7 +45,7 @@ jobs:
           office-chooser: ${{ matrix.office }}
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
-          s3-cfg: ${{ secrets.S3_CFG }}
+          # s3-cfg: ${{ secrets.S3_CFG }}
       - name: rollback
         if: ${{ failure() || cancelled() }}
         run: |

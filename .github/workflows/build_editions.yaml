@@ -22,7 +22,7 @@ jobs:
       matrix:
         ##### EDIT ME #####
         # EDITION: [budgie,cinnamon,i3,mate]
-        EDITION: [budgie,cinnamon]
+        EDITION: [cinnamon]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         OFFICE: [true]
@@ -38,7 +38,7 @@ jobs:
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
           version: "23.1.0"
-          kernel: linux65
+          kernel: linux66
           code-name: "Vulcan"
           build-mirror: ${{ secrets.BUILD_MIRROR }}
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}

@@ -36,9 +36,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "23.1.4"
-          kernel: linux66
-          code-name: "Vulcan"
+          version: "24.0.2"
+          kernel: linux69
+          code-name: "Wynsdey"
           build-mirror: ${{ secrets.BUILD_MIRROR }}
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
           office-chooser: ${{ matrix.office }}

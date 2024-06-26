@@ -21,8 +21,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        # EDITION: [budgie,cinnamon,i3,mate]
-        EDITION: [cinnamon]
+        EDITION: [cinnamon,i3]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         OFFICE: [true]
@@ -37,7 +36,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "23.1.0"
+          version: "23.1.4"
           kernel: linux66
           code-name: "Vulcan"
           build-mirror: ${{ secrets.BUILD_MIRROR }}

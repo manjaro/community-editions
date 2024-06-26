@@ -42,7 +42,7 @@ jobs:
           office-chooser: "true"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
-          sf-project: manjarolinux-community
+          sf-project: manjarolinux
           sf-user: ${{ secrets.SF_USER_NAME }}
           sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
           s3-cfg: ${{ secrets.S3_CFG }}

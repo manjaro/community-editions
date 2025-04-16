@@ -11,7 +11,7 @@ jobs:
       matrix:
         ##### EDIT ME #####
         EDITION: [i3, cinnamon]
-        KERNEL: [linux612]
+        KERNEL: [linux614]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################

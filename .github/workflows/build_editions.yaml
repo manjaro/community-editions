@@ -25,9 +25,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "24.1.2"
+          version: "25.0.0"
           kernel: ${{ matrix.kernel }}
-          code-name: "Xahea"
+          code-name: "Zetar"
           office-chooser: "true"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}

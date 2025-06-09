@@ -11,7 +11,7 @@ jobs:
       matrix:
         ##### EDIT ME #####
         EDITION: [i3, cinnamon]
-        KERNEL: [linux614]
+        KERNEL: [linux612]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################
@@ -25,7 +25,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "25.0.0"
+          version: "25.0.3"
           kernel: ${{ matrix.kernel }}
           code-name: "Zetar"
           office-chooser: "true"

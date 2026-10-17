@@ -11,13 +11,13 @@ Images are built and uploaded in a relatively regular interval to [github releas
 
 ## sources
 
-- [iso profile](https://gitlab.manjaro.org/profiles-and-settings/iso-profiles/-/tree/master/manjaro)
-- [community desktop settings](https://gitlab.manjaro.org/profiles-and-settings/desktop-settings/-/tree/master/community)
+- [iso profile](https://code.manjaro.org/profiles/iso-profiles/src/branch/master/community)
+- [community desktop settings](https://code.manjaro.org/profiles/desktop-settings/src/branch/master/community)
 
 ## building
 
 1. check out the iso profiles
-2. `buildiso -p xfce -b stable`
+2. `buildiso -p cinnamon -b stable`
 
 ## credentials
 

@@ -8,7 +8,7 @@ jobs:
   prepare-release:
     runs-on: ubuntu-26.04
     steps:
-      - uses: styfle/cancel-workflow-action@01ce38bf961b4e243a6342cbade0dbc8ba3f0432 # 0.12.0
+      - uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
         with:
           access_token: ${{ github.token }}
       - id: time

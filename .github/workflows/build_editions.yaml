@@ -16,10 +16,10 @@ jobs:
         with:
           format: 'YYYYMMDDHHmm'
     outputs:
-      release_tag: ${{ steps.time.outputs.time }}      
+      release_tag: ${{ steps.time.outputs.time }}
   release:
     runs-on: ubuntu-26.04
-    needs: prepare-release    
+    needs: prepare-release
     strategy:
       matrix:
         ##### EDIT ME #####
@@ -33,7 +33,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - id: image-build
-        uses: yochananmarqos/manjaro-iso-action@patch-2
+        uses: manjaro/manjaro-iso-action@main
         with:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}

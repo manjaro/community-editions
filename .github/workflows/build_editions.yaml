@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [i3, cinnamon]
+        EDITION: [cinnamon]
         KERNEL: [linux618]
         BRANCH: [stable]
         SCOPE: [minimal,full]

@@ -38,9 +38,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "26.1.2"
+          version: "27.0"
           kernel: ${{ matrix.kernel }}
-          code-name: "Bian-May"
+          code-name: "Caldonia"
           build-mirror: "https://mirrors.manjaro.org/repo"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
       - name: rollback
